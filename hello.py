@@ -8,6 +8,8 @@ jinja_env = jinja2.Environment(
     loader = jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
 from google.appengine.api import users
+from models import Note
+from google.appengine.ext import ndb
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
@@ -18,8 +20,7 @@ class MainHandler(webapp2.RequestHandler):
                 'user': user.nickname(),
                 'logout-url': logout_url,
             }
-            template = jinja_env.get_template('main.html')
-            self.response.out.write(template.render(template_context))
+            self.response.out.write(self._render_template('main.html', template_context))
             
         else:
             login_url = users.create_login_url(self.request.uri)
@@ -31,7 +32,8 @@ class MainHandler(webapp2.RequestHandler):
         if user is None:
             self.error(401)
         
-        note = Note(title=self.request.get('title'),
+        note = Note(parent=ndb.Key("User",user.nickname()),
+                    title=self.request.get('title'),
                     content=self.request.get('content'))
         note.put()
         
@@ -42,8 +44,14 @@ class MainHandler(webapp2.RequestHandler):
             'note_title': self.request.get('title'),
             'note_content': self.request.get('content'),
         }
-        template = jinja_env.get_template('main.html')
-        self.response.out.write(template.render(template_context))
+        self.response.out.write(self._render_template('main.html', template_context))
+        
+    def _render_template(self, template_name, context=None):
+        if context is None:
+            context = {}
+        template = jinja_env.get_template(template_name)
+        return template.render(context)    
+        
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
