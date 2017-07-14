@@ -31,6 +31,10 @@ class MainHandler(webapp2.RequestHandler):
         if user is None:
             self.error(401)
         
+        note = Note(title=self.request.get('title'),
+                    content=self.request.get('content'))
+        note.put()
+        
         logout_url = users.create_logout_url(self.request.uri)
         template_context = {
             'user': user.nickname(),
@@ -42,5 +46,5 @@ class MainHandler(webapp2.RequestHandler):
         self.response.out.write(template.render(template_context))
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    ('/', MainHandler),
     ], debug=True)
