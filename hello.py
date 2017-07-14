@@ -32,6 +32,10 @@ class MainHandler(webapp2.RequestHandler):
         if user is None:
             self.error(401)
         
+        ancestor_key = ndb.Key("User", user.nickname())
+        qry = Note.owner_query(ancestor_key)
+        notes = qry.fetch()
+        
         note = Note(parent=ndb.Key("User",user.nickname()),
                     title=self.request.get('title'),
                     content=self.request.get('content'))
@@ -49,6 +53,12 @@ class MainHandler(webapp2.RequestHandler):
     def _render_template(self, template_name, context=None):
         if context is None:
             context = {}
+        
+        user = users.get_current_user()
+        ancestor_key = ndb.Key("User", user.nickname())
+        qry = Note.owner_query(ancestor_key)
+        context['notes'] = qry.fetch()
+        
         template = jinja_env.get_template(template_name)
         return template.render(context)    
         

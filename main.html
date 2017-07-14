@@ -17,8 +17,12 @@
 			<p>Hello, <b>{{user}}</b> - <a href="{{logout_url}}">Logout</a></p>
 			
 			{% if note_title %}
-				<p>Title: {{note_title}}</p>
-				<p>Content: {{note_content}}</p>
+				{% for note in notes %}
+				<div class="note">
+				<h4>{{ note.title }}</h4>
+				<p class="note-content">{{ note.content }}</p>
+				</div>
+				{% endfor %}
 			{% endif %}
 			
 			<h4>Add a new note</h4>
