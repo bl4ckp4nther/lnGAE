@@ -6,6 +6,7 @@
 	
 		<meta charset = "UTF-8">
 		<title>Heyy! Notes xD</title>
+		<link href="static/css/notes.css" type="text/css" rel="stylesheet">
 		
 	</head>
 	
@@ -19,8 +20,10 @@
 			{% if note_title %}
 				{% for note in notes %}
 				<div class="note">
-				<h4>{{ note.title }}</h4>
-				<p class="note-content">{{ note.content }}</p>
+					<h4>{{ note.title }}</h4>
+					<p class="note-content">{{ note.content }}</p>
+					<p>{{ note.parent }}</p>
+					<p>{{ note.date_created }}</p>
 				</div>
 				{% endfor %}
 			{% endif %}
